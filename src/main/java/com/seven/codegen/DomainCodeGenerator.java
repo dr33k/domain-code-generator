@@ -51,7 +51,9 @@ public class DomainCodeGenerator {
                     ));
 
             //Create file
-            File javaFile = Files.createFile(outputPath.resolve(String.format("%s%s.java", domainNameUpp, drkFile.getKey()))).toFile();
+            File javaFile = Files.createFile(outputPath.resolve(String.format("%s%s.java", domainNameUpp,
+                    drkFile.getKey().equals("Entity") ? "" : drkFile.getKey() //To name the entity class DomainName.java instead of DomainNameEntity.java
+            ))).toFile();
 
             //Write into created file
             try (FileOutputStream fos = new FileOutputStream(javaFile)) {
