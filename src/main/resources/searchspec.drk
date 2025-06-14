@@ -1,0 +1,26 @@
+package ${package};
+
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class ${domain_upp}SearchSpecification {
+    public static Specification<${domain_upp}> getAllAndFilter(${domain_upp}Request.Filter ${domain_low}Filter) {
+        return (root, criteriaQuery, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if(StringUtils.isNotBlank(${domain_low}Filter.getName()))
+                criteriaBuilder.like(root.get("name" ),"%"+ ${domain_low}Filter.getName()+"%");
+            if(Objects.nonNull(${domain_low}Filter.getDateCreatedFrom()))
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("dateCreated"), ${domain_low}Filter.getDateCreatedFrom()));
+            if(Objects.nonNull(${domain_low}Filter.getDateCreatedTo()))
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dateCreated"), ${domain_low}Filter.getDateCreatedTo()));
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+}

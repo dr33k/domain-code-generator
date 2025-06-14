@@ -1,0 +1,126 @@
+package ${package};
+
+import com.seven.auth.Pagination;
+import com.seven.auth.exception.${service_name_upp}Exception;
+import com.seven.auth.exception.ClientException;
+import com.seven.auth.exception.ConflictException;
+import com.seven.auth.exception.NotFoundException;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+public class ${domain_upp}Service{
+    private final Logger log = LoggerFactory.getLogger(getClass());
+
+    private final ${domain_upp}Repository ${domain_low}Repository;
+    private final ModelMapper modelMapper;
+
+    public ${domain_upp}Service(${domain_upp}Repository ${domain_low}Repository) {
+        this.${domain_low}Repository = ${domain_low}Repository;
+        this.modelMapper = modelMapper;
+
+        //Purpose:
+        // When a request POJO is recieved, skip the id field when mapping into the entity. We should always generate an id or use the one gotten from the DB in the case of an update;
+        // Skip the request's dateCreated field
+        TypeMap<${domain_upp}Request, ${domain_upp}> ${domain_low}ToEntityTypeMap = modelMapper.createTypeMap(${domain_upp}Request.class, ${domain_upp}.class);
+        ${domain_low}ToEntityTypeMap.addMappings(mapper -> {
+            mapper.skip(${domain_upp}::setId);
+            mapper.skip(${domain_upp}::setDateCreated);
+            mapper.skip(${domain_upp}::setDateUpdated);
+        });
+    }
+
+    public Page<${domain_upp}DTO> getAll(Pagination pagination, ${domain_upp}Request.Filter filter) throws ${service_name_upp}Exception {
+        Application targetApplication = TenantContext.getCurrentTenant();
+        log.info("Retrieving ${domain_upp}s for Application: {}", targetApplication.getId());
+        try {
+            Pageable pageable = PageRequest.of(pagination.getOffset(), pagination.getLimit(),
+                    Sort.by(
+                            Sort.Direction.fromString(pagination.getSortOrder() == null ? "DESC" : pagination.getSortOrder()),
+                            pagination.getSortField() == null ? "dateCreated" : pagination.getSortField()
+                    )
+            );
+            Page<${domain_upp}DTO> ${domain_low}sResponse = ${domain_low}Repository
+                    .findAll(${domain_upp}SearchSpecification.getAllAndFilter(filter), pageable)
+                    .map(${domain_low}Entity -> modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.class));
+
+            log.info("${domain_upp}s retrieved successfully");
+            return ${domain_low}sResponse;
+        } catch (Exception e) {
+            log.error("Exception retrieving ${domain_upp}s for Application: {} in service layer. Trace: {}", targetApplication.getId(), e);
+            throw new ClientException(e.getMessage());
+        }
+    }
+
+    public ${domain_upp}DTO get(UUID id) throws ${service_name_upp}Exception {
+        Application targetApplication = TenantContext.getCurrentTenant();
+        log.info("Retrieving ${domain_upp}: {} for  Application: {}", id, targetApplication.getId());
+        try {
+            ${domain_upp} ${domain_low}Entity = ${domain_low}Repository.findById(id).orElseThrow(() -> {
+                log.error("${domain_upp}: {} not found", id);
+                return new NotFoundException(String.format("${domain_upp}: %s not found", id));
+            });
+
+            ${domain_upp}DTO response = modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.class);
+            log.info("${domain_upp} retrieved successfully");
+            return response;
+        } catch (${service_name_upp}Exception e) {
+            log.error("${service_name_upp}Exception retrieving ${domain_low} in Application: {}. Reason: {}", targetApplication.getId(), e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Exception retrieving ${domain_upp}: {} for Application: {} in service layer. Trace: {}", id, targetApplication.getId(), e);
+            throw new ClientException(e.getMessage());
+        }
+    }
+
+    public void delete(UUID id) throws ${service_name_upp}Exception {
+        Application targetApplication = TenantContext.getCurrentTenant();
+        log.info("Deleting ${domain_upp}: {} for  Application: {}", id, targetApplication.getId());
+        try {
+            ${domain_low}Repository.deleteById(id);
+            log.info("${domain_upp} deleted successfully");
+        } catch (EmptyResultDataAccessException e) {
+            log.error("${domain_upp} {} not found.", id);
+            throw new NotFoundException(String.format("${domain_upp} %s not found", id));
+        } catch (Exception e) {
+            log.error("Exception deleting ${domain_upp}: {} for Application: {} in service layer. Trace: {}", id, targetApplication.getId(), e);
+            throw new ClientException(e.getMessage());
+        }
+    }
+
+    public ${domain_upp}DTO create(${domain_upp}Request.Create request) throws ${service_name_upp}Exception {
+        Application targetApplication = TenantContext.getCurrentTenant();
+        log.info("Registering ${domain_upp}s for Application: {}", targetApplication.getId());
+        try {
+            //Validate unique name for an organisation
+            if (${domain_low}Repository.existsByName(request.getName())) {
+                log.error("${domain_upp} with name '{}' already exists", request.getName());
+                throw new ConflictException(String.format("${domain_upp} with name '%s' already exists", request.getName()));
+            }
+
+            ${domain_upp} ${domain_low}Entity = modelMapper.map(request, ${domain_upp}.class);
+            ${domain_low}Entity = ${domain_low}Repository.save(${domain_low}Entity);
+            ${domain_upp}DTO response = modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.class);
+
+            log.info("${domain_upp} {} registered successfully with id {}", ${domain_low}Entity.getName(), ${domain_low}Entity.getId());
+            return response;
+        } catch (${service_name_upp}Exception e) {
+            log.error("${service_name_upp}Exception registering ${domain_low} in Application: {}. Reason: {}", targetApplication.getId(), e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            log.error("Error registering ${domain_low} in Application: {}. Trace: ", targetApplication.getId(), e);
+            throw new ClientException(e.getMessage());
+        }
+    }
+}
+

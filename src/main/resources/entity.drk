@@ -1,0 +1,50 @@
+package ${package};
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.ZonedDateTime;
+import java.util.Objects;
+import java.util.UUID;
+
+@Entity
+@Table(name = "auth_${domain_low}")
+@Data
+@ToString
+public class ${domain_upp} {
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column
+    private String description;
+
+    @CreationTimestamp
+    @Column(nullable = false)
+    private ZonedDateTime dateCreated;
+
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private ZonedDateTime dateUpdated;
+
+    public ${domain_upp}() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ${domain_upp} ${domain_low} = (${domain_upp}) o;
+        return Objects.equals(id, ${domain_low}.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+}

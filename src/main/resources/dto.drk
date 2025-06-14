@@ -1,0 +1,14 @@
+package ${package};
+
+import java.time.ZonedDateTime;
+import java.util.UUID;
+
+public record ${domain_upp}DTO(
+        UUID id,
+        String name,
+        String description,
+        ZonedDateTime dateCreated,
+        ZonedDateTime dateUpdated
+) {
+
+}
