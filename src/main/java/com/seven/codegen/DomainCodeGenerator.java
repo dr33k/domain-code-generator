@@ -17,23 +17,26 @@ public class DomainCodeGenerator {
                 "\n* The capitalized name of this service eg MyService" +
                 "\n* The Capitalized name of this domain eg Book";
 
-        String domainNameLow = args[2].toLowerCase();
-        generate(args[0], args[1], args[2], domainNameLow);
+        String domainNameCamelCase = Character.toLowerCase(args[2].charAt(0)) + args[2].substring(1);
+        generate(args[0], args[1], args[2], domainNameCamelCase);
     }
 
-    private static void generate(String packageName, String serviceNameUpp, String domainNameUpp, String domainNameLow) throws IOException {
-        Path outputPath = Paths.get(System.getProperty("user.home"), "Desktop/generated_code", domainNameLow);
-        Files.list(outputPath).forEach(
-                path -> {
-                    if(Files.isRegularFile(path)){
-                        try {
-                            Files.delete(path);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
+    private static void generate(String packageName, String serviceNameUpp, String domainNameUpp, String domainNameCamel) throws IOException {
+        Path outputPath = Paths.get(System.getProperty("user.home"), "Desktop/generated_code", domainNameCamel);
+        //Delete old if exists
+        if (Files.exists(outputPath)) {
+            Files.list(outputPath).forEach(
+                    path -> {
+                        if (Files.isRegularFile(path)) {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
                     }
-                }
-        );
+            );
+        }
         Files.createDirectories(outputPath);
 
         for (Map.Entry<String, String> drkFile : Constants.drkFiles.entrySet()) {
@@ -44,14 +47,14 @@ public class DomainCodeGenerator {
                             Constants.PACKAGE_NAME, packageName,
                             Constants.SERVICE_NAME_UPP, serviceNameUpp,
                             Constants.DOMAIN_NAME_UPP, domainNameUpp,
-                            Constants.DOMAIN_NAME_LOW, domainNameLow
+                            Constants.DOMAIN_NAME_LOW, domainNameCamel
                     ));
 
             //Create file
-            File javaFile =  Files.createFile(outputPath.resolve(String.format("%s%s.java", domainNameUpp, drkFile.getKey()))).toFile();
+            File javaFile = Files.createFile(outputPath.resolve(String.format("%s%s.java", domainNameUpp, drkFile.getKey()))).toFile();
 
             //Write into created file
-            try(FileOutputStream fos = new FileOutputStream(javaFile)){
+            try (FileOutputStream fos = new FileOutputStream(javaFile)) {
                 byte[] bytes = javaFileString.getBytes(StandardCharsets.UTF_8);
                 fos.write(bytes);
             }
