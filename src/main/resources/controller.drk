@@ -1,8 +1,8 @@
 package ${package};
 
-import com.seven.auth.Pagination;
+import com.seven.auth.util.Pagination;
 import com.seven.auth.exception.${service_name_upp}Exception;
-import com.seven.auth.response.Response;
+import com.seven.auth.util.response.Response;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static com.seven.auth.response.Responder.noContent;
-import static com.seven.auth.response.Responder.ok;
+import static com.seven.auth.util.response.Responder.noContent;
+import static com.seven.auth.util.response.Responder.ok;
 
 @RestController
 @RequestMapping("/${domain_low}")
@@ -29,22 +29,22 @@ public class ${domain_upp}Controller {
     }
 
     @GetMapping
-    public ResponseEntity <Response> getResources(Pagination pagination, ${domain_upp}Request.Filter ${domain_low}Filter)  throws ${service_name_upp}Exception {
+    public ResponseEntity <Response> getResources(Pagination pagination, ${domain_upp}DTO.Filter ${domain_low}Filter)  throws ${service_name_upp}Exception {
         Page<${domain_upp}DTO> ${domain_low}DTOs = ${domain_low}Service.getAll(pagination, ${domain_low}Filter);
         return ok(${domain_low}DTOs);
     }
 
     @PostMapping
-    public ResponseEntity <Response> createResource(@Valid @RequestBody ${domain_upp}Request.Create request) throws ${service_name_upp}Exception {
+    public ResponseEntity <Response> createResource(@Valid @RequestBody ${domain_upp}DTO.Create request) throws ${service_name_upp}Exception {
         ${domain_upp}DTO ${domain_low}DTO = ${domain_low}Service.create(request);
         return ok(${domain_low}DTO);
     }
 
-    @PutMapping("/{${domain_low}Id}")
-    public ResponseEntity <Response> updateResource(@Valid @NotNull @PathVariable(value = "${domain_low}Id") UUID id, @Valid @RequestBody ${domain_upp}Request.Update request) {
-        ${domain_upp}DTO ${domain_low}DTO = ${domain_low}Service.update(id, request);
-        return ok(${domain_low}DTO);
-    }
+//    @PutMapping("/{${domain_low}Id}")
+//    public ResponseEntity <Response> updateResource(@Valid @NotNull @PathVariable(value = "${domain_low}Id") UUID id, @Valid @RequestBody ${domain_upp}DTO.Update request) {
+//       ${domain_upp}DTO ${domain_low}DTO = ${domain_low}Service.update(id, request);
+//        return ok(${domain_low}DTO);
+//    }
     
     @DeleteMapping("{${domain_low}Id}")
     public ResponseEntity <Response> deleteResource(@Valid @NotNull @PathVariable(value = "${domain_low}Id") UUID id) throws ${service_name_upp}Exception {

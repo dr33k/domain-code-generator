@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface ${domain_upp}Repository extends JpaRepository<${domain_upp}, UUID>, JpaSpecificationExecutor<${domain_upp}> {
+    Boolean existsByName(String name);
 }
