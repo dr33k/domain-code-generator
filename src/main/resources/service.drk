@@ -38,7 +38,7 @@ public class ${domain_upp}Service{
         });
     }
 
-    public Page<${domain_upp}DTO> getAll(Pagination pagination, ${domain_upp}DTO.Filter filter) throws ${service_name_upp}Exception {
+    public Page<${domain_upp}DTO.Record> getAll(Pagination pagination, ${domain_upp}DTO.Filter filter) throws ${service_name_upp}Exception {
         String tenant = TenantContext.getCurrentTenant();
         log.info("Retrieving ${domain_upp}sfor Tenant: {}", tenant);
         try {
@@ -48,9 +48,9 @@ public class ${domain_upp}Service{
                             pagination.getSortField() == null ? "dateCreated" : pagination.getSortField()
                     )
             );
-            Page<${domain_upp}DTO> ${domain_low}sResponse = ${domain_low}Repository
+            Page<${domain_upp}DTO.Record> ${domain_low}sResponse = ${domain_low}Repository
                     .findAll(${domain_upp}SearchSpecification.getAllAndFilter(filter), pageable)
-                    .map(${domain_low}Entity -> modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.class));
+                    .map(${domain_low}Entity -> modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.Record.class));
 
             log.info("${domain_upp}s retrieved successfully");
             return ${domain_low}sResponse;
@@ -60,7 +60,7 @@ public class ${domain_upp}Service{
         }
     }
 
-    public ${domain_upp}DTO get(UUID id) throws ${service_name_upp}Exception {
+    public ${domain_upp}DTO.Record get(UUID id) throws ${service_name_upp}Exception {
         String tenant = TenantContext.getCurrentTenant();
         log.info("Retrieving ${domain_upp}: {} for Tenant: {}", id, tenant);
         try {
@@ -69,7 +69,7 @@ public class ${domain_upp}Service{
                 return new NotFoundException(String.format("${domain_upp}: %s not found", id));
             });
 
-            ${domain_upp}DTO response = modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.class);
+            ${domain_upp}DTO.Record response = modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.Record.class);
             log.info("${domain_upp} retrieved successfully");
             return response;
         } catch (${service_name_upp}Exception e) {
@@ -96,7 +96,7 @@ public class ${domain_upp}Service{
         }
     }
 
-    public ${domain_upp}DTO create(${domain_upp}DTO.Create request) throws ${service_name_upp}Exception {
+    public ${domain_upp}DTO.Record create(${domain_upp}DTO.Create request) throws ${service_name_upp}Exception {
         String tenant = TenantContext.getCurrentTenant();
         log.info("Registering ${domain_upp} for Tenant: {}", tenant);
         try {
@@ -108,7 +108,7 @@ public class ${domain_upp}Service{
 
             ${domain_upp} ${domain_low}Entity = modelMapper.map(request, ${domain_upp}.class);
             ${domain_low}Entity = ${domain_low}Repository.save(${domain_low}Entity);
-            ${domain_upp}DTO response = modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.class);
+            ${domain_upp}DTO.Record response = modelMapper.map(${domain_low}Entity, ${domain_upp}DTO.Record.class);
 
             log.info("${domain_upp} {} registered successfully with id {}", ${domain_low}Entity.getName(), ${domain_low}Entity.getId());
             return response;

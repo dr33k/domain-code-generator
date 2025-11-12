@@ -24,26 +24,26 @@ public class ${domain_upp}Controller {
 
     @GetMapping
     public ResponseEntity <Response> getResource(@Valid @NotNull @PathVariable(value = "${domain_low}Id") UUID id)  throws ${service_name_upp}Exception {
-        ${domain_upp}DTO ${domain_low}DTO = ${domain_low}Service.get(id);
-        return ok(${domain_low}DTO);
+        ${domain_upp}DTO.Record ${domain_low}Record = ${domain_low}Service.get(id);
+        return ok(${domain_low}Record);
     }
 
     @GetMapping
     public ResponseEntity <Response> getResources(Pagination pagination, ${domain_upp}DTO.Filter ${domain_low}Filter)  throws ${service_name_upp}Exception {
-        Page<${domain_upp}DTO> ${domain_low}DTOs = ${domain_low}Service.getAll(pagination, ${domain_low}Filter);
-        return ok(${domain_low}DTOs);
+        Page<${domain_upp}DTO.Record> ${domain_low}Records = ${domain_low}Service.getAll(pagination, ${domain_low}Filter);
+        return ok(${domain_low}Records);
     }
 
     @PostMapping
     public ResponseEntity <Response> createResource(@Valid @RequestBody ${domain_upp}DTO.Create request) throws ${service_name_upp}Exception {
-        ${domain_upp}DTO ${domain_low}DTO = ${domain_low}Service.create(request);
-        return ok(${domain_low}DTO);
+        ${domain_upp}DTO.Record ${domain_low}Record = ${domain_low}Service.create(request);
+        return ok(${domain_low}Record);
     }
 
 //    @PutMapping("/{${domain_low}Id}")
 //    public ResponseEntity <Response> updateResource(@Valid @NotNull @PathVariable(value = "${domain_low}Id") UUID id, @Valid @RequestBody ${domain_upp}DTO.Update request) {
-//       ${domain_upp}DTO ${domain_low}DTO = ${domain_low}Service.update(id, request);
-//        return ok(${domain_low}DTO);
+//       ${domain_upp}DTO.Record ${domain_low}Record = ${domain_low}Service.update(id, request);
+//        return ok(${domain_low}Record);
 //    }
     
     @DeleteMapping("{${domain_low}Id}")
